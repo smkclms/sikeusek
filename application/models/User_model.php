@@ -29,7 +29,7 @@ class User_model extends CI_Model {
         $this->db->where_not_in('role', $roles);
     }
     return $this->db->get('users')->result();
-    }
+}
 
     // Tambahkan metode lain sesuai kebutuhan
 }

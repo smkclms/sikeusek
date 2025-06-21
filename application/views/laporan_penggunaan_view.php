@@ -10,6 +10,12 @@
 <body class="bg-light">
 <div class="container py-4">
   <h2><i class="fas fa-file-alt"></i> Laporan Penggunaan</h2>
+<div class="mb-3">
+  <a href="<?= site_url('dashboard/bendahara'); ?>" class="btn btn-secondary">
+    <i class="fas fa-arrow-left"></i> Kembali ke Dashboard
+  </a>
+</div>
+
 
   <form id="filterForm" method="get" action="<?= site_url('laporanpenggunaan'); ?>" class="row g-3 align-items-center mb-4">
 
@@ -67,27 +73,31 @@
       <th>Nama Pengguna</th>
       <th>Tanggal Pengeluaran</th>
       <th>Jumlah Pengeluaran</th>
+      <th>Kode Rekening</th> <!-- Tambahkan header ini -->
       <th>Keterangan</th>
     </tr>
   </thead>
   <tbody>
     <?php if (empty($expenditures)): ?>
-      <tr><td colspan="5" class="text-center">Tidak ada data pengeluaran.</td></tr>
+      <tr><td colspan="6" class="text-center">Tidak ada data pengeluaran.</td></tr>
     <?php else: ?>
       <?php $no = 1; ?>
-      <?php foreach ($expenditures as $expenditure): ?>
-        <?php $user = $this->User_model->get_user_by_id($expenditure->user_id); ?>
+      <?php foreach ($expenditures as $ex): ?>
+        <?php $user = $this->User_model->get_user_by_id($ex->user_id); ?>
         <tr>
-          <td><?= $no++; ?></td>
-          <td><?= $user ? htmlspecialchars($user->nama_lengkap) : 'Tidak ditemukan'; ?></td>
-          <td><?= date('d-m-Y', strtotime($expenditure->tanggal_pengeluaran)); ?></td>
-          <td>Rp <?= number_format($expenditure->jumlah_pengeluaran, 0, ',', '.'); ?></td>
-          <td><?= htmlspecialchars($expenditure->keterangan); ?></td>
-        </tr>
+    <td><?= $no++; ?></td>
+    <td><?= htmlspecialchars($user ? $user->nama_lengkap : '-'); ?></td>
+    <td><?= date('d-m-Y', strtotime($ex->tanggal_pengeluaran)); ?></td>
+    <td>Rp <?= number_format($ex->jumlah_pengeluaran, 0, ',', '.'); ?></td>
+    <td><?= htmlspecialchars($ex->kode_rekening_kode . ' - ' . $ex->nama_rekening); ?></td>
+    <td><?= htmlspecialchars($ex->keterangan); ?></td>
+</tr>
+
       <?php endforeach; ?>
     <?php endif; ?>
   </tbody>
 </table>
+
 
   </div>
 </div>
