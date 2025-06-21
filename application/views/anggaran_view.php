@@ -1,24 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Anggaran</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container-custom {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .form-section {
+            flex: 1 1 300px;
+            max-width: 400px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .table-section {
+            flex: 2 1 600px;
+            overflow-x: auto;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="h3">Manajemen Anggaran</h1>
-        <a href="<?php echo site_url('dashboard/bendahara'); ?>" class="btn btn-secondary">← Kembali ke Dashboard</a>
-    </div>
+    <h2 class="mb-3"><i class="fas fa-money-bill-wave"></i> Manajemen Anggaran</h2>
 
-    <div class="card mb-4">
-        <div class="card-header bg-primary text-white">
-            Tambah Anggaran
-        </div>
-        <div class="card-body">
+    <div class="container-custom">
+        <!-- Form Tambah Anggaran -->
+        <div class="form-section">
+            <h4>Tambah Anggaran</h4>
             <form action="<?php echo site_url('anggaran/add'); ?>" method="post">
                 <div class="mb-3">
                     <label for="user_id" class="form-label">Pengguna</label>
@@ -40,36 +62,48 @@
                     <input type="number" name="tahun" class="form-control" required>
                 </div>
 
-                <button type="submit" class="btn btn-success">Tambah Anggaran</button>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Tambah Anggaran
+                    </button>
+                    <a href="<?php echo site_url('dashboard/bendahara'); ?>" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </a>
+                </div>
             </form>
         </div>
-    </div>
 
-    <h2 class="h4 mb-3">Daftar Anggaran</h2>
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered align-middle">
-            <thead class="table-light">
-                <tr>
-                    <th>ID</th>
-                    <th>Pengguna</th>
-                    <th>Jumlah Anggaran</th>
-                    <th>Tahun</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($anggaran as $item): ?>
-                <tr>
-                    <td><?php echo $item->id; ?></td>
-                    <td><?php echo $this->User_model->get_user_by_id($item->user_id)->nama_lengkap; ?></td>
-                    <td>Rp <?php echo number_format($item->jumlah_anggaran, 2, ',', '.'); ?></td>
-                    <td><?php echo $item->tahun; ?></td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+        <!-- Tabel Daftar Anggaran -->
+        <div class="table-section">
+            <h4 class="mb-3">Daftar Anggaran</h4>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>ID</th>
+                            <th>Pengguna</th>
+                            <th>Jumlah Anggaran</th>
+                            <th>Tahun</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($anggaran as $item): ?>
+                        <tr>
+                            <td><?php echo $item->id; ?></td>
+                            <td><?php echo $this->User_model->get_user_by_id($item->user_id)->nama_lengkap; ?></td>
+                            <td>Rp <?php echo number_format($item->jumlah_anggaran, 2, ',', '.'); ?></td>
+                            <td><?php echo $item->tahun; ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 
+<!-- Font Awesome untuk ikon -->
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,207 +1,159 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pengeluaran</title>
+  <title>Manajemen Pengeluaran</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f7f7f7;
-    }
-
-    .wrapper {
-      max-width: 720px;
-      margin: 40px auto;
-      background-color: #ffffff;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .top-nav {
+    .container-custom {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
       flex-wrap: wrap;
+      gap: 30px;
     }
 
-    .top-nav h2 {
-      color: #007bff;
-      margin: 0 0 10px 0;
+    .form-section {
+      flex: 1 1 300px;
+      max-width: 400px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .top-nav a {
-      text-decoration: none;
+    .table-section {
+      flex: 2 1 600px;
+    }
+
+    .btn {
+      border-radius: 6px;
+    }
+
+    .btn-primary {
       background-color: #007bff;
-      color: #fff;
-      padding: 8px 15px;
-      border-radius: 5px;
-      margin-left: 10px;
+      border-color: #007bff;
     }
 
-    .top-nav a.logout {
-      background-color: #dc3545;
-    }
-
-    .top-nav a:hover {
-      opacity: 0.9;
-    }
-
-    form label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    form input[type="text"],
-    form input[type="date"],
-    form input[type="number"],
-    form select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    form input[type="submit"] {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    form input[type="submit"]:hover {
+    .btn-primary:hover {
       background-color: #0056b3;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 30px;
+    .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
     }
 
-    th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-
-    th {
+    .table th {
       background-color: #007bff;
       color: white;
     }
 
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-
-    @media (max-width: 600px) {
-      .top-nav {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .top-nav a {
-        margin: 5px 0;
-      }
-
-      h2 {
-        font-size: 20px;
-      }
+    .table th, .table td {
+      vertical-align: middle;
     }
   </style>
 </head>
-<body>
+<body class="bg-light">
 
-  <div class="wrapper">
-    <div class="top-nav">
-      <h2>Pengeluaran</h2>
-      <div>
-        <a href="<?php echo site_url(
-          $this->session->userdata('role') == 'bendahara' ? 'dashboard/bendahara' : 'dashboard/view'
-        ); ?>">← Dashboard</a>
-        <a href="<?php echo site_url('auth/logout'); ?>" class="logout">
-          <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
-      </div>
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+    <h2><i class="fas fa-money-bill-wave"></i> Pengeluaran</h2>
+    <div class="d-flex gap-2">
+      <a href="<?= site_url(
+        $this->session->userdata('role') == 'bendahara' ? 'dashboard/bendahara' : 'dashboard/view'
+      ); ?>" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Dashboard</a>
+      <a href="<?= site_url('auth/logout'); ?>" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
-
-    <p>Selamat datang, <strong><?php echo $this->session->userdata('nama_lengkap'); ?></strong>!</p>
-
-    <form action="<?php echo site_url('expenditure/add'); ?>" method="post">
-      <?php if ($this->session->userdata('role') === 'bendahara'): ?>
-        <label for="user_id">Pengguna:</label>
-        <select name="user_id" id="user_id" required>
-          <?php foreach ($users as $user): ?>
-            <?php if (!in_array(strtolower($user->role), ['bendahara', 'superadmin'])): ?>
-              <option value="<?= $user->id; ?>"><?= $user->nama_lengkap; ?></option>
-            <?php endif; ?>
-          <?php endforeach; ?>
-        </select>
-      <?php else: ?>
-        <p><strong>Pengguna:</strong> <?= $this->session->userdata('nama'); ?></p>
-        <input type="hidden" name="user_id" value="<?= $this->session->userdata('user_id'); ?>">
-      <?php endif; ?>
-
-      <label for="tanggal_pengeluaran">Tanggal Pengeluaran:</label>
-      <input type="date" name="tanggal_pengeluaran" required>
-
-      <label for="jumlah_pengeluaran">Jumlah Pengeluaran:</label>
-      <input type="number" name="jumlah_pengeluaran" step="0.01" required>
-
-      <label for="keterangan">Keterangan:</label>
-      <input type="text" name="keterangan" required>
-
-      <label for="kode_rekening_id">Kode Rekening:</label>
-      <select name="kode_rekening_id" id="kode_rekening_id" required>
-        <?php foreach ($kode_rekening as $kode): ?>
-          <option value="<?php echo $kode->id; ?>">
-            <?php echo $kode->kode . ' - ' . $kode->nama_rekening; ?>
-          </option>
-        <?php endforeach; ?>
-      </select>
-
-      <input type="submit" value="Tambah Pengeluaran">
-    </form>
-
-    <h3>Daftar Pengeluaran</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nama Pengguna</th>
-          <th>Tanggal</th>
-          <th>Jumlah</th>
-          <th>Keterangan</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php if (empty($expenditures)): ?>
-          <tr><td colspan="5">Tidak ada data pengeluaran.</td></tr>
-        <?php else: ?>
-          <?php foreach ($expenditures as $expenditure): ?>
-            <?php $user = $this->User_model->get_user_by_id($expenditure->user_id); ?>
-            <tr>
-              <td><?php echo $expenditure->id; ?></td>
-              <td><?php echo $user ? $user->nama_lengkap : 'Tidak ditemukan'; ?></td>
-              <td><?php echo $expenditure->tanggal_pengeluaran; ?></td>
-              <td>Rp <?php echo number_format($expenditure->jumlah_pengeluaran, 0, ',', '.'); ?></td>
-              <td><?php echo $expenditure->keterangan; ?></td>
-            </tr>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </tbody>
-    </table>
   </div>
 
+  <p>Selamat datang, <strong><?= $this->session->userdata('nama_lengkap'); ?></strong>!</p>
+
+  <div class="container-custom">
+    <!-- Form Input -->
+    <div class="form-section">
+      <h5 class="mb-3">Tambah Pengeluaran</h5>
+      <form action="<?= site_url('expenditure/add'); ?>" method="post">
+        <?php if ($this->session->userdata('role') === 'bendahara'): ?>
+          <div class="mb-3">
+            <label for="user_id" class="form-label"><i class="fas fa-user"></i> Pengguna</label>
+            <select name="user_id" id="user_id" class="form-select" required>
+              <?php foreach ($users as $user): ?>
+                <?php if (!in_array(strtolower($user->role), ['bendahara', 'superadmin'])): ?>
+                  <option value="<?= $user->id; ?>"><?= $user->nama_lengkap; ?></option>
+                <?php endif; ?>
+              <?php endforeach; ?>
+            </select>
+          </div>
+        <?php else: ?>
+          <p><strong>Pengguna:</strong> <?= $this->session->userdata('nama'); ?></p>
+          <input type="hidden" name="user_id" value="<?= $this->session->userdata('user_id'); ?>">
+        <?php endif; ?>
+
+        <div class="mb-3">
+          <label for="tanggal_pengeluaran" class="form-label"><i class="fas fa-calendar-alt"></i> Tanggal</label>
+          <input type="date" name="tanggal_pengeluaran" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="jumlah_pengeluaran" class="form-label"><i class="fas fa-money-bill"></i> Jumlah</label>
+          <input type="number" name="jumlah_pengeluaran" class="form-control" step="0.01" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="keterangan" class="form-label"><i class="fas fa-info-circle"></i> Keterangan</label>
+          <input type="text" name="keterangan" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+          <label for="kode_rekening_id" class="form-label"><i class="fas fa-file-invoice-dollar"></i> Kode Rekening</label>
+          <select name="kode_rekening_id" class="form-select" required>
+            <?php foreach ($kode_rekening as $kode): ?>
+              <option value="<?= $kode->id; ?>"><?= $kode->kode . ' - ' . $kode->nama_rekening; ?></option>
+            <?php endforeach; ?>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-plus"></i> Tambah</button>
+      </form>
+    </div>
+
+    <!-- Tabel -->
+    <div class="table-section">
+      <h5 class="mb-3">Daftar Pengeluaran</h5>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nama Pengguna</th>
+              <th>Tanggal</th>
+              <th>Jumlah</th>
+              <th>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php if (empty($expenditures)): ?>
+              <tr><td colspan="5" class="text-center">Tidak ada data pengeluaran.</td></tr>
+            <?php else: ?>
+              <?php foreach ($expenditures as $expenditure): ?>
+                <?php $user = $this->User_model->get_user_by_id($expenditure->user_id); ?>
+                <tr>
+                  <td><?= $expenditure->id; ?></td>
+                  <td><?= $user ? $user->nama_lengkap : 'Tidak ditemukan'; ?></td>
+                  <td><?= date('d-m-Y', strtotime($expenditure->tanggal_pengeluaran)); ?></td>
+                  <td>Rp <?= number_format($expenditure->jumlah_pengeluaran, 0, ',', '.'); ?></td>
+                  <td><?= $expenditure->keterangan; ?></td>
+                </tr>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

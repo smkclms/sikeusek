@@ -69,6 +69,14 @@ $route['sumberanggaran'] = 'sumberanggaran/index'; // Rute untuk melihat sumber 
 $route['sumberanggaran/add'] = 'sumberanggaran/add'; // Rute untuk menambah sumber anggaran
 $route['profil'] = 'profil/index';
 $route['profil/password'] = 'profil/password';
+$route['laporanpenggunaan'] = 'LaporanPenggunaan/index';
+$route['laporanpenggunaan/cetak_pdf'] = 'LaporanPenggunaan/cetak_pdf';
+$route['laporanpenggunaan/export_excel'] = 'LaporanPenggunaan/export_excel';
+$route['laporanpenggunaan'] = 'laporanpenggunaan/index';
+$route['laporanpenggunaan/cetak_pdf'] = 'laporanpenggunaan/cetak_pdf';
+$route['laporanpenggunaan/export_excel'] = 'laporanpenggunaan/export_excel';
+$route['dashboard/laporan_penggunaan_user'] = 'dashboard/laporan_penggunaan_user';
+
 
 
 

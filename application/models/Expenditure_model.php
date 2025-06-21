@@ -40,6 +40,8 @@ public function get_monthly_expenditure_by_user($year, $month, $user_id) {
     public function get_all_expenditures() {
         return $this->db->get('pengeluaran')->result(); // Mengambil semua data pengeluaran
     }
+
+    
     
 }
 ?>

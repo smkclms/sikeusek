@@ -65,6 +65,39 @@ public function view() {
     // Load view khusus pengguna
     $this->load->view('dashboard_view', $data);
 }
+public function laporan_penggunaan_user() {
+    $user_id = $this->session->userdata('user_id');
+    $role = strtolower($this->session->userdata('role'));
+
+    // Jika bendahara/superadmin, redirect ke halaman laporan bendahara (dengan filter)
+    if (in_array($role, ['bendahara', 'superadmin'])) {
+        redirect('laporanpenggunaan'); // atau controller laporan bendahara Anda
+    }
+
+    // Ambil data user
+    $user = $this->User_model->get_user_by_id($user_id);
+    $anggaran = $this->Anggaran_model->get_anggaran_by_user($user_id);
+    $total_anggaran = !empty($anggaran) ? $anggaran[0]->jumlah_anggaran : 0;
+
+    // Ambil pengeluaran user tanpa filter tanggal (semua data)
+    $expenditures_user = $this->Expenditure_model->get_expenditures_by_user($user_id);
+
+    $total_pengeluaran = 0;
+    foreach ($expenditures_user as $ex) {
+        $total_pengeluaran += is_array($ex) ? $ex['jumlah_pengeluaran'] : $ex->jumlah_pengeluaran;
+    }
+
+    $sisa_anggaran = $total_anggaran - $total_pengeluaran;
+
+    $data = [
+        'user' => $user,
+        'total_anggaran' => $total_anggaran,
+        'sisa_anggaran' => $sisa_anggaran,
+        'expenditures_user' => $expenditures_user,
+    ];
+
+    $this->load->view('dashboard_view', $data);
+}
 
 
 }

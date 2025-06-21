@@ -153,7 +153,10 @@
                 <h2>SIKEUSEK</h2>
             </div>
             <a href="<?php echo site_url('expenditure'); ?>"><i class="fas fa-wallet"></i> Pengeluaran</a>
+           <a href="<?= site_url('dashboard/laporan_penggunaan_user'); ?>"><i class="fas fa-file-alt"></i> Laporan Penggunaan</a>
+
             <a href="<?php echo site_url('auth/logout'); ?>" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            
         </div>
         <div class="main-content">
             <h1>Dashboard Pengguna Anggaran</h1>
@@ -179,6 +182,7 @@
                 <p><strong>Jumlah Anggaran:</strong> Rp <?php echo number_format($total_anggaran, 0, ',', '.'); ?></p>
                 <p><strong>Sisa Anggaran:</strong> Rp <?php echo number_format($sisa_anggaran, 0, ',', '.'); ?></p>
             </div>
+            
 
             <h2>Pengeluaran Saya</h2>
             <table>

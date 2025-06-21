@@ -24,6 +24,12 @@ class User_model extends CI_Model {
     public function get_user_by_username($username) {
     return $this->db->get_where('users', ['username' => $username])->row();
     }
+    public function get_all_users_except_roles($roles = []) {
+    if (!empty($roles)) {
+        $this->db->where_not_in('role', $roles);
+    }
+    return $this->db->get('users')->result();
+    }
 
     // Tambahkan metode lain sesuai kebutuhan
 }

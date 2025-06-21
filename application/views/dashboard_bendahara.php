@@ -220,6 +220,7 @@
         <a href="<?= site_url('anggaran'); ?>"><i class="fas fa-wallet"></i> Anggaran</a>
         <a href="<?= site_url('expenditure'); ?>"><i class="fas fa-money-bill-wave"></i> Pengeluaran</a>
         <a href="<?= site_url('report'); ?>"><i class="fas fa-chart-line"></i> Laporan</a>
+        <a href="<?= site_url('laporanpenggunaan'); ?>"><i class="fas fa-file-alt"></i> Laporan Penggunaan</a>
         <a href="<?= site_url('auth/logout'); ?>" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
     </div>
 
