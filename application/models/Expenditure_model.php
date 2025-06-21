@@ -41,7 +41,35 @@ public function get_monthly_expenditure_by_user($year, $month, $user_id) {
         return $this->db->get('pengeluaran')->result(); // Mengambil semua data pengeluaran
     }
 
-    
+    public function get_expenditure_by_id($id) {
+    return $this->db->get_where('pengeluaran', ['id' => $id])->row();
+}
+public function update_expenditure($id, $data) {
+    $this->db->where('id', $id);
+    return $this->db->update('pengeluaran', $data);
+}
+public function count_all_expenditures() {
+    return $this->db->count_all('pengeluaran');
+}
+
+public function get_expenditures_limit($limit, $start) {
+    $this->db->limit($limit, $start);
+    $this->db->order_by('tanggal_pengeluaran', 'DESC');
+    return $this->db->get('pengeluaran')->result();
+}
+public function delete_expenditure($id) {
+    return $this->db->where('id', $id)->delete('pengeluaran'); // Ganti 'expenditure' dengan nama tabel pengeluaran Anda jika berbeda
+}
+// Ambil data pengeluaran dengan limit dan offset (pagination)
+public function get_expenditures_paginated($limit, $offset) {
+    return $this->db
+                ->order_by('tanggal_pengeluaran', 'DESC')
+                ->limit($limit, $offset)
+                ->get('pengeluaran') // Ganti dengan nama tabel Anda
+                ->result();
+}
+
+
     
 }
 ?>

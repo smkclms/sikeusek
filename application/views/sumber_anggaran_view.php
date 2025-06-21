@@ -97,24 +97,39 @@
                             <th>Nama Sumber</th>
                             <th>Jumlah</th>
                             <th>Tanggal</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php if (!empty($sumber)): ?>
-                            <?php foreach ($sumber as $item): ?>
-                            <tr>
-                                <td><?= $item->id; ?></td>
-                                <td><?= $item->nama_sumber; ?></td>
-                                <td>Rp <?= number_format($item->jumlah, 0, ',', '.'); ?></td>
-                                <td><?= date('d-m-Y', strtotime($item->created_at)); ?></td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="4" class="text-center">Belum ada data sumber anggaran.</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
+                   <tbody>
+    <?php if (!empty($sumber)): ?>
+        <?php foreach ($sumber as $item): ?>
+        <tr>
+            <td><?= $item->id; ?></td>
+            <td><?= $item->nama_sumber; ?></td>
+            <td>Rp <?= number_format($item->jumlah, 0, ',', '.'); ?></td>
+            <td><?= date('d-m-Y', strtotime($item->created_at)); ?></td>
+            <td>
+                <!-- Tombol Edit -->
+                <a href="<?= site_url('sumberanggaran/edit/' . $item->id); ?>" class="btn btn-sm btn-warning" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </a>
+
+                <!-- Tombol Delete dengan konfirmasi -->
+                <form action="<?= site_url('sumberanggaran/delete/' . $item->id); ?>" method="post" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus sumber anggaran ini?');">
+                    <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <tr>
+            <td colspan="5" class="text-center">Belum ada data sumber anggaran.</td>
+        </tr>
+    <?php endif; ?>
+</tbody>
+
                 </table>
             </div>
         </div>

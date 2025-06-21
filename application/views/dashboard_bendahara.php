@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Haii, Selamat Datang <?php echo $this->session->userdata('nama_lengkap'); ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Tambahan CSS/JS lainnya -->
 </head>
 
@@ -201,6 +202,43 @@
                 height: 60px;
             }
         }
+        .anggaran-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.anggaran-info h4 {
+    margin: 0;
+}
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 220px;
+    background-color: #007bff;
+    padding: 15px;
+    color: white;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    max-height: 100vh;
+}
         
     </style>
 </head>
@@ -253,13 +291,16 @@
     echo number_format($total_disalurkan, 0, ',', '.');
     ?>
 </h4>
+<div class="anggaran-info" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+<h4 style="color: blue;">
+    <strong>Anggaran Dibelanjakan:</strong> Rp <?= number_format($total_dibelanjakan, 0, ',', '.'); ?>
+</h4>
 
 <h4 style="color: red;">
     <strong>Sisa Anggaran yang Belum Disalurkan:</strong> 
     Rp <?= number_format($total_pagu - $total_disalurkan, 0, ',', '.'); ?>
 </h4>
-
-
+</div>
         <div class="card-container">
             <?php foreach ($users as $user): ?>
                 <?php
@@ -283,7 +324,7 @@
             <?php endforeach; ?>
         </div>
 
-        <h2>Daftar Pengeluaran</h2>
+        <!-- <h2>Daftar Pengeluaran</h2>
         <table>
             <thead>
                 <tr>
@@ -310,7 +351,70 @@
                     <?php endforeach; ?>
                 <?php endif; ?>
             </tbody>
-        </table>
+        </table> -->
+        <h2>Grafik Pengeluaran</h2>
+        <canvas id="expenditureChart" width="400" height="200"></canvas>
+                        <script>
+    // Data dari PHP ke JS
+    const expenditures = <?php 
+        // Siapkan array dengan nama pengguna dan jumlah pengeluaran per pengguna
+        $data = [];
+        foreach ($expenditures as $ex) {
+            $user = $this->User_model->get_user_by_id($ex->user_id);
+            $name = $user ? $user->nama_lengkap : 'Tidak Diketahui';
+            // Jika nama sudah ada, jumlahkan pengeluarannya
+            if (!isset($data[$name])) {
+                $data[$name] = 0;
+            }
+            $data[$name] += $ex->jumlah_pengeluaran;
+        }
+        echo json_encode($data);
+    ?>;
+
+    // Pisahkan ke label dan data
+    const labels = Object.keys(expenditures);
+    const data = Object.values(expenditures);
+
+    const ctx = document.getElementById('expenditureChart').getContext('2d');
+    const expenditureChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Jumlah Pengeluaran (Rp)',
+                data: data,
+                backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                borderRadius: 5,
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        // Format angka ke rupiah
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
     </div>
 </div>
 

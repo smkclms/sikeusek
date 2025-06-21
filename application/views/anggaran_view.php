@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Anggaran</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .container-custom {
             display: flex;
@@ -78,25 +79,38 @@
             <h4 class="mb-3">Daftar Anggaran</h4>
             <div class="table-responsive">
                 <table class="table table-striped table-bordered align-middle">
-                    <thead class="table-primary">
-                        <tr>
-                            <th>ID</th>
-                            <th>Pengguna</th>
-                            <th>Jumlah Anggaran</th>
-                            <th>Tahun</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($anggaran as $item): ?>
-                        <tr>
-                            <td><?php echo $item->id; ?></td>
-                            <td><?php echo $this->User_model->get_user_by_id($item->user_id)->nama_lengkap; ?></td>
-                            <td>Rp <?php echo number_format($item->jumlah_anggaran, 2, ',', '.'); ?></td>
-                            <td><?php echo $item->tahun; ?></td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+    <thead class="table-primary">
+        <tr>
+            <th>Nomor</th>
+            <th>Pengguna</th>
+            <th>Jumlah Anggaran</th>
+            <th>Tahun</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php $no = 1; ?>
+        <?php foreach ($anggaran as $item): ?>
+        <tr>
+            <td><?= $no++; ?></td>
+            <td><?= $this->User_model->get_user_by_id($item->user_id)->nama_lengkap; ?></td>
+            <td>Rp <?= number_format($item->jumlah_anggaran, 2, ',', '.'); ?></td>
+            <td><?= $item->tahun; ?></td>
+            <td>
+                <a href="<?= site_url('anggaran/edit/' . $item->id); ?>" class="btn btn-sm btn-warning" title="Edit">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <form action="<?= site_url('anggaran/delete/' . $item->id); ?>" method="post" style="display:inline;" onsubmit="return confirm('Yakin ingin menghapus anggaran ini?');">
+                    <button type="submit" class="btn btn-sm btn-danger" title="Hapus">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </form>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+
             </div>
         </div>
     </div>

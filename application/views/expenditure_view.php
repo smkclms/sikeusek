@@ -123,32 +123,46 @@
       <h5 class="mb-3">Daftar Pengeluaran</h5>
       <div class="table-responsive">
         <table class="table table-bordered table-striped">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nama Pengguna</th>
-              <th>Tanggal</th>
-              <th>Jumlah</th>
-              <th>Keterangan</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php if (empty($expenditures)): ?>
-              <tr><td colspan="5" class="text-center">Tidak ada data pengeluaran.</td></tr>
-            <?php else: ?>
-              <?php foreach ($expenditures as $expenditure): ?>
-                <?php $user = $this->User_model->get_user_by_id($expenditure->user_id); ?>
-                <tr>
-                  <td><?= $expenditure->id; ?></td>
-                  <td><?= $user ? $user->nama_lengkap : 'Tidak ditemukan'; ?></td>
-                  <td><?= date('d-m-Y', strtotime($expenditure->tanggal_pengeluaran)); ?></td>
-                  <td>Rp <?= number_format($expenditure->jumlah_pengeluaran, 0, ',', '.'); ?></td>
-                  <td><?= $expenditure->keterangan; ?></td>
-                </tr>
-              <?php endforeach; ?>
-            <?php endif; ?>
-          </tbody>
-        </table>
+  <thead>
+    <tr>
+      <th>Nomor</th>
+      <th>Nama Pengguna</th>
+      <th>Tanggal</th>
+      <th>Jumlah</th>
+      <th>Keterangan</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php if (empty($expenditures)): ?>
+      <tr><td colspan="6" class="text-center">Tidak ada data pengeluaran.</td></tr>
+    <?php else: ?>
+      <?php $no = 1; ?>
+      <?php foreach ($expenditures as $expenditure): ?>
+        <?php $user = $this->User_model->get_user_by_id($expenditure->user_id); ?>
+        <tr>
+          <td><?= $no++; ?></td>
+          <td><?= $user ? htmlspecialchars($user->nama_lengkap) : 'Tidak ditemukan'; ?></td>
+          <td><?= date('d-m-Y', strtotime($expenditure->tanggal_pengeluaran)); ?></td>
+          <td>Rp <?= number_format($expenditure->jumlah_pengeluaran, 0, ',', '.'); ?></td>
+          <td><?= htmlspecialchars($expenditure->keterangan); ?></td>
+          <td>
+            <a href="<?= site_url('expenditure/edit/' . $expenditure->id); ?>" class="btn btn-warning btn-sm">
+              <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="<?= site_url('expenditure/delete/' . $expenditure->id); ?>" onclick="return confirm('Yakin ingin menghapus data ini?');" class="btn btn-danger btn-sm">
+              <i class="fas fa-trash"></i> Hapus
+            </a>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </tbody>
+  
+</table>
+<div class="mt-3">
+    <?= $pagination; ?>
+</div>
       </div>
     </div>
   </div>
