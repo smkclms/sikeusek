@@ -26,60 +26,79 @@ class Dashboard extends CI_Controller {
         }
         $data['total_pagu'] = $total_pagu;
 
-        $this->load->view('dashboard_view', $data);
+        $this->load->view('dashboard_bendahara', $data);
     }
 
     public function bendahara($page = 0) {
-        $config['base_url'] = site_url('dashboard/bendahara');
-        $config['total_rows'] = $this->Expenditure_model->count_all_expenditures();
-        $config['per_page'] = 10;
-        $config['uri_segment'] = 3;
+    $config['base_url'] = site_url('dashboard/bendahara');
+    $config['total_rows'] = $this->Expenditure_model->count_all_expenditures();
+    $config['per_page'] = 10;
+    $config['uri_segment'] = 3;
 
-        // Bootstrap 5 pagination styling
-        $config['full_tag_open'] = '<nav><ul class="pagination">';
-        $config['full_tag_close'] = '</ul></nav>';
-        $config['num_tag_open'] = '<li class="page-item">';
-        $config['num_tag_close'] = '</li>';
-        $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link">';
-        $config['cur_tag_close'] = '</a></li>';
-        $config['prev_link'] = '&laquo;';
-        $config['prev_tag_open'] = '<li class="page-item">';
-        $config['prev_tag_close'] = '</li>';
-        $config['next_link'] = '&raquo;';
-        $config['next_tag_open'] = '<li class="page-item">';
-        $config['next_tag_close'] = '</li>';
-        $config['attributes'] = ['class' => 'page-link'];
+    // Bootstrap 5 pagination styling
+    $config['full_tag_open'] = '<nav><ul class="pagination">';
+    $config['full_tag_close'] = '</ul></nav>';
+    $config['num_tag_open'] = '<li class="page-item">';
+    $config['num_tag_close'] = '</li>';
+    $config['cur_tag_open'] = '<li class="page-item active"><a class="page-link">';
+    $config['cur_tag_close'] = '</a></li>';
+    $config['prev_link'] = '&laquo;';
+    $config['prev_tag_open'] = '<li class="page-item">';
+    $config['prev_tag_close'] = '</li>';
+    $config['next_link'] = '&raquo;';
+    $config['next_tag_open'] = '<li class="page-item">';
+    $config['next_tag_close'] = '</li>';
+    $config['attributes'] = ['class' => 'page-link'];
 
-        $this->pagination->initialize($config);
+    $this->pagination->initialize($config);
 
-        $data['users'] = $this->User_model->get_all_users_except_roles(['bendahara', 'superadmin']);
-        $data['expenditures'] = $this->Expenditure_model->get_expenditures_limit($config['per_page'], $page);
+    $data['users'] = $this->User_model->get_all_users_except_roles(['bendahara', 'superadmin']);
+    $data['expenditures'] = $this->Expenditure_model->get_expenditures_limit($config['per_page'], $page);
 
-        $sumber_anggaran = $this->SumberAnggaran_model->get_all_sumber();
-        $total_pagu = 0;
-        foreach ($sumber_anggaran as $item) {
-            $total_pagu += $item->jumlah;
+    // ✅ Tambahkan semua data pengeluaran untuk grafik
+    $all_expenditures = $this->Expenditure_model->get_all_expenditures();
+    $expenditures_chart = [];
+
+    foreach ($all_expenditures as $ex) {
+        $user = $this->User_model->get_user_by_id($ex->user_id);
+        $name = $user ? $user->nama_lengkap : 'Tidak Diketahui';
+        if (!isset($expenditures_chart[$name])) {
+            $expenditures_chart[$name] = 0;
         }
-        $data['total_pagu'] = $total_pagu;
-
-        $total_disalurkan = 0;
-        foreach ($data['users'] as $user) {
-            $anggaran = $this->Anggaran_model->get_anggaran_by_user($user->id);
-            $total_disalurkan += !empty($anggaran) ? $anggaran[0]->jumlah_anggaran : 0;
-        }
-        $data['total_disalurkan'] = $total_disalurkan;
-
-        $total_dibelanjakan = 0;
-        foreach ($data['users'] as $user) {
-            $pengeluaran_user = $this->Expenditure_model->get_expenditures_by_user($user->id);
-            foreach ($pengeluaran_user as $ex) {
-                $total_dibelanjakan += is_array($ex) ? $ex['jumlah_pengeluaran'] : $ex->jumlah_pengeluaran;
-            }
-        }
-        $data['total_dibelanjakan'] = $total_dibelanjakan;
-
-        $this->load->view('dashboard_bendahara', $data);
+        $expenditures_chart[$name] += $ex->jumlah_pengeluaran;
     }
+
+    $data['expenditures_chart'] = $expenditures_chart;
+
+    // Total pagu
+    $sumber_anggaran = $this->SumberAnggaran_model->get_all_sumber();
+    $total_pagu = 0;
+    foreach ($sumber_anggaran as $item) {
+        $total_pagu += $item->jumlah;
+    }
+    $data['total_pagu'] = $total_pagu;
+
+    // Total disalurkan
+    $total_disalurkan = 0;
+    foreach ($data['users'] as $user) {
+        $anggaran = $this->Anggaran_model->get_anggaran_by_user($user->id);
+        $total_disalurkan += !empty($anggaran) ? $anggaran[0]->jumlah_anggaran : 0;
+    }
+    $data['total_disalurkan'] = $total_disalurkan;
+
+    // Total dibelanjakan
+    $total_dibelanjakan = 0;
+    foreach ($data['users'] as $user) {
+        $pengeluaran_user = $this->Expenditure_model->get_expenditures_by_user($user->id);
+        foreach ($pengeluaran_user as $ex) {
+            $total_dibelanjakan += is_array($ex) ? $ex['jumlah_pengeluaran'] : $ex->jumlah_pengeluaran;
+        }
+    }
+    $data['total_dibelanjakan'] = $total_dibelanjakan;
+
+    $this->load->view('dashboard_bendahara', $data);
+}
+
 
     public function view() {
         $user_id = $this->session->userdata('user_id');

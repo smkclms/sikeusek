@@ -34,9 +34,17 @@
             height: 100vh;
         }
         .app-header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.app-header h1 {
+    font-size: 16px;
+    margin: 0;
+}
+
+
         .logo {
             width: 60px;
             height: 60px;
@@ -239,27 +247,72 @@ html, body {
     overflow-y: auto;
     max-height: 100vh;
 }
-        
-    </style>
+.sidebar.collapsed {
+    width: 60px;
+    transition: width 0.3s ease;
+}
+
+.sidebar.collapsed .app-header h1,
+.sidebar.collapsed a span {
+    display: none;
+}
+
+.sidebar.collapsed .app-header img {
+    width: 40px;
+    height: 40px;
+}
+
+.sidebar a {
+    display: flex;
+    align-items: center;
+}
+
+.sidebar a i {
+    margin-right: 8px;
+}
+
+.sidebar a span {
+    display: inline-block;
+    transition: opacity 0.3s ease;
+}
+</style>
 </head>
 <body>
 
 <div class="container">
     <!-- Sidebar -->
     <div class="sidebar">
+        <button id="toggleSidebar" style="background:#006eff; border:none; padding:10px; border-radius:10px; color:white; margin-bottom:10px; cursor:pointer;">
+    <i class="fas fa-bars"></i>
+</button>
+
         <div class="app-header">
             <img src="<?= base_url('assets/img/logo.png'); ?>" class="logo" alt="Logo">
-            <h1>SIKEUSEK</h1>
+            <h1>SIKEUSEK</h1><br>
         </div>
         <!-- Menu Dashboard -->
-    <a href="<?php echo site_url('dashboard/bendahara'); ?>"><i class="fas fa-home"></i> Dashboard</a>
+    <!-- <a href="<?php echo site_url('dashboard/bendahara'); ?>"><i class="fas fa-home"></i> Dashboard</a>
         <a href="<?= site_url('usermanagement'); ?>"><i class="fas fa-users"></i> Manajemen Pengguna</a>
         <a href="<?= site_url('sumberanggaran'); ?>"><i class="fas fa-coins"></i> Sumber Anggaran</a>
         <a href="<?= site_url('anggaran'); ?>"><i class="fas fa-wallet"></i> Anggaran</a>
         <a href="<?= site_url('expenditure'); ?>"><i class="fas fa-money-bill-wave"></i> Pengeluaran</a>
         <a href="<?= site_url('report'); ?>"><i class="fas fa-chart-line"></i> Laporan</a>
         <a href="<?= site_url('laporanpenggunaan'); ?>"><i class="fas fa-file-alt"></i> Laporan Penggunaan</a>
-        <a href="<?= site_url('auth/logout'); ?>" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        <a href="<?= site_url('auth/logout'); ?>" class="logout"><i class="fas fa-sign-out-alt"></i> Logout</a> -->
+
+        <a href="<?= site_url('dashboard/bendahara'); ?>"><i class="fas fa-home"></i> <span>Dashboard</span></a>
+        <a href="<?= site_url('usermanagement'); ?>"><i class="fas fa-users"></i> <span>Manajemen Pengguna</span></a>
+        <a href="<?= site_url('koderekening'); ?>"><i class="fas fa-file-invoice"></i> <span>Kode Rekening</span></a>
+        <a href="<?= site_url('sumberanggaran'); ?>"><i class="fas fa-coins"></i> <span>Sumber Anggaran</span></a>
+        <a href="<?= site_url('anggaran'); ?>"><i class="fas fa-wallet"></i> <span>Anggaran</span></a>
+        <a href="<?= site_url('expenditure'); ?>"><i class="fas fa-money-bill-wave"></i> <span>Pengeluaran</span></a>
+        <a href="<?= site_url('report'); ?>"><i class="fas fa-chart-line"></i> <span>Laporan</span></a>
+        <a href="<?= site_url('laporanpenggunaan'); ?>"><i class="fas fa-file-alt"></i> <span>Laporan Penggunaan</span></a>
+        <a href="<?= site_url('auth/logout'); ?>"><i class="fas fa-sign-out-alt"></i> <span>Logout</span></a>
+<!-- dan seterusnya... -->
+
+        <!-- dan seterusnya... -->
+
     </div>
 
     <!-- Main Content -->
@@ -353,25 +406,13 @@ html, body {
             </tbody>
         </table> -->
         <h2>Grafik Pengeluaran</h2>
-        <canvas id="expenditureChart" width="400" height="200"></canvas>
-                        <script>
-    // Data dari PHP ke JS
-    const expenditures = <?php 
-        // Siapkan array dengan nama pengguna dan jumlah pengeluaran per pengguna
-        $data = [];
-        foreach ($expenditures as $ex) {
-            $user = $this->User_model->get_user_by_id($ex->user_id);
-            $name = $user ? $user->nama_lengkap : 'Tidak Diketahui';
-            // Jika nama sudah ada, jumlahkan pengeluarannya
-            if (!isset($data[$name])) {
-                $data[$name] = 0;
-            }
-            $data[$name] += $ex->jumlah_pengeluaran;
-        }
-        echo json_encode($data);
-    ?>;
+<canvas id="expenditureChart" width="400" height="200"></canvas>
 
-    // Pisahkan ke label dan data
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Data dari PHP ke JavaScript
+    const expenditures = <?php echo isset($expenditures_chart) ? json_encode($expenditures_chart) : '{}'; ?>;
+
     const labels = Object.keys(expenditures);
     const data = Object.values(expenditures);
 
@@ -386,7 +427,7 @@ html, body {
                 backgroundColor: 'rgba(54, 162, 235, 0.7)',
                 borderColor: 'rgba(54, 162, 235, 1)',
                 borderWidth: 1,
-                borderRadius: 5,
+                borderRadius: 5
             }]
         },
         options: {
@@ -395,7 +436,6 @@ html, body {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        // Format angka ke rupiah
                         callback: function(value) {
                             return 'Rp ' + value.toLocaleString('id-ID');
                         }
@@ -413,7 +453,12 @@ html, body {
             }
         }
     });
+});
 </script>
+
+
+
+
 
     </div>
 </div>
@@ -438,6 +483,12 @@ html, body {
         });
     });
 </script>
+<script>
+    document.getElementById('toggleSidebar').addEventListener('click', function () {
+        document.querySelector('.sidebar').classList.toggle('collapsed');
+    });
+</script>
+
 
 </body>
 </html>

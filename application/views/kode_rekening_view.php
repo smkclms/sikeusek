@@ -1,36 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Kode Rekening</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manajemen Kode Rekening</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    td.nama-rekening {
+      word-break: break-word;
+      max-width: 400px;
+    }
+    @media (max-width: 768px) {
+      .table-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
-    <h1>Manajemen Kode Rekening</h1>
-    <form action="<?php echo site_url('koderekening/add'); ?>" method="post">
-        <label for="kode">Kode Rekening:</label>
-        <input type="text" name="kode" required><br>
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="text-primary m-0">📁 Manajemen Kode Rekening</h2>
+      <a href="<?= site_url('dashboard/bendahara'); ?>" class="btn btn-outline-secondary">
+        ← Kembali ke Dashboard
+      </a>
+    </div>
 
-        <label for="nama_rekening">Nama Rekening:</label>
-        <input type="text" name="nama_rekening" required><br>
+    <div class="row g-4">
+      <!-- Form Tambah -->
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            Tambah Kode Rekening
+          </div>
+          <div class="card-body">
+            <form action="<?= site_url('koderekening/add'); ?>" method="post">
+              <div class="mb-3">
+                <label for="kode" class="form-label">Kode Rekening</label>
+                <input type="text" name="kode" id="kode" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="nama_rekening" class="form-label">Nama Rekening</label>
+                <input type="text" name="nama_rekening" id="nama_rekening" class="form-control" required>
+              </div>
+              <button type="submit" class="btn btn-success w-100">+ Tambah</button>
+            </form>
+          </div>
+        </div>
+      </div>
 
-        <input type="submit" value="Tambah Kode Rekening">
-    </form>
+      <!-- Tabel Daftar -->
+      <div class="col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-header bg-secondary text-white">
+            Daftar Kode Rekening
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-striped table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th width="5%">#</th>
+                    <th width="15%">Kode</th>
+                    <th width="55%">Nama Rekening</th>
+                    <th width="25%">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <?php if (!empty($kode_rekening)): ?>
+                    <?php foreach ($kode_rekening as $kode): ?>
+                      <tr>
+                        <td><?= $kode->id; ?></td>
+                        <td><?= $kode->kode; ?></td>
+                        <td class="nama-rekening"><?= $kode->nama_rekening; ?></td>
+                        <td>
+                          <div class="d-flex gap-2 table-actions">
+                            <a href="<?= site_url('koderekening/edit/' . $kode->id); ?>" class="btn btn-warning btn-sm">
+                              ✏️ Edit
+                            </a>
+                            <form action="<?= site_url('koderekening/delete/' . $kode->id); ?>" method="post" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                              <button type="submit" class="btn btn-danger btn-sm">
+                                🗑️ Hapus
+                              </button>
+                            </form>
+                          </div>
+                        </td>
+                      </tr>
+                    <?php endforeach; ?>
+                  <?php else: ?>
+                    <tr>
+                      <td colspan="4" class="text-center text-muted">Belum ada data rekening.</td>
+                    </tr>
+                  <?php endif; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <h2>Daftar Kode Rekening</h2>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Kode</th>
-            <th>Nama Rekening</th>
-        </tr>
-        <?php foreach ($kode_rekening as $kode): ?>
-        <tr>
-            <td><?php echo $kode->id; ?></td>
-            <td><?php echo $kode->kode; ?></td>
-            <td><?php echo $kode->nama_rekening; ?></td>
-        </tr>
-        <?php endforeach; ?>
-    </table>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -153,13 +153,21 @@
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($monthly_expenditure as $nama => $total): ?>
-                <tr>
-                    <td><?= $nama; ?></td>
-                    <td>Rp <?= number_format($total, 0, ',', '.'); ?></td>
-                </tr>
-                <?php endforeach; ?>
-            </tbody>
+    <?php foreach ($monthly_expenditure as $nama => $total): ?>
+    <tr>
+        <td><?= $nama; ?></td>
+        <td>Rp <?= number_format($total, 0, ',', '.'); ?></td>
+    </tr>
+    <?php endforeach; ?>
+    <?php
+        $grand_total = array_sum($monthly_expenditure);
+    ?>
+    <tr style="font-weight: bold; background-color: #f2f2f2;">
+        <td style="text-align: right;">Total</td>
+        <td>Rp <?= number_format($grand_total, 0, ',', '.'); ?></td>
+    </tr>
+</tbody>
+
         </table>
 
         <!-- Aksi -->
