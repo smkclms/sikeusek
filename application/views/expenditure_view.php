@@ -52,6 +52,12 @@
     .table th, .table td {
       vertical-align: middle;
     }
+    @media (max-width: 576px) {
+  .d-flex.gap-2 {
+    flex-direction: column;
+  }
+}
+
   </style>
 </head>
 <body class="bg-light">
@@ -114,7 +120,15 @@
           </select>
         </div>
 
-        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-plus"></i> Tambah</button>
+        <div class="d-flex gap-2">
+  <button type="submit" class="btn btn-primary w-50">
+    <i class="fas fa-plus"></i> Tambah
+  </button>
+  <button type="button" class="btn btn-outline-primary w-50" data-bs-toggle="modal" data-bs-target="#importModal">
+    <i class="fas fa-upload"></i> Import
+  </button>
+</div>
+
       </form>
     </div>
 
@@ -129,7 +143,8 @@
       <th>Nama Pengguna</th>
       <th>Tanggal</th>
       <th>Jumlah</th>
-      <th>Keterangan</th>
+    <th>Kode Rekening</th>
+    <th>Keterangan</th>
       <th>Aksi</th>
     </tr>
   </thead>
@@ -145,6 +160,7 @@
           <td><?= $user ? htmlspecialchars($user->nama_lengkap) : 'Tidak ditemukan'; ?></td>
           <td><?= date('d-m-Y', strtotime($expenditure->tanggal_pengeluaran)); ?></td>
           <td>Rp <?= number_format($expenditure->jumlah_pengeluaran, 0, ',', '.'); ?></td>
+          <td><?= isset($expenditure->kode_rekening_kode) ? $expenditure->kode_rekening_kode : '-'; ?></td>
           <td><?= htmlspecialchars($expenditure->keterangan); ?></td>
           <td>
             <a href="<?= site_url('expenditure/edit/' . $expenditure->id); ?>" class="btn btn-warning btn-sm">
@@ -157,6 +173,34 @@
         </tr>
       <?php endforeach; ?>
     <?php endif; ?>
+    <!-- Modal Import Excel -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="<?= site_url('expenditure/import'); ?>" method="post" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title" id="importModalLabel">Import Data Pengeluaran</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="file_import" class="form-label">Pilih File Excel</label>
+            <input type="file" class="form-control" name="file_import" accept=".xls,.xlsx" required>
+            <small class="text-muted">Format: user_id, kode_rekening, tanggal_pengeluaran, jumlah_pengeluaran, keterangan</small>
+          </div>
+          <a href="<?= base_url('assets/template_import_pengeluaran.xlsx'); ?>" class="btn btn-link">
+            📥 Unduh Template Excel
+          </a>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Import Sekarang</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
   </tbody>
   
 </table>

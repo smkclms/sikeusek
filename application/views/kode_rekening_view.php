@@ -46,7 +46,12 @@
                 <label for="nama_rekening" class="form-label">Nama Rekening</label>
                 <input type="text" name="nama_rekening" id="nama_rekening" class="form-control" required>
               </div>
+              <div class="d-flex gap-2">
               <button type="submit" class="btn btn-success w-100">+ Tambah</button>
+              <button type="button" class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#importModal">
+                ⬆️ Import
+              </button>
+            </div>
             </form>
           </div>
         </div>
@@ -63,7 +68,7 @@
               <table class="table table-striped table-hover mb-0">
                 <thead class="table-light">
                   <tr>
-                    <th width="5%">#</th>
+                    <th width="5%">ID</th>
                     <th width="15%">Kode</th>
                     <th width="55%">Nama Rekening</th>
                     <th width="25%">Aksi</th>
@@ -95,8 +100,39 @@
                       <td colspan="4" class="text-center text-muted">Belum ada data rekening.</td>
                     </tr>
                   <?php endif; ?>
-                </tbody>
+                  <!-- Modal Import -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form action="<?= site_url('koderekening/import'); ?>" method="post" enctype="multipart/form-data">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="importModalLabel">Import Kode Rekening</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="file_import" class="form-label">Pilih File (CSV/Excel)</label>
+            <input type="file" name="file_import" id="file_import" class="form-control" accept=".xls,.xlsx,.csv" required>
+            <small class="text-muted">Format file: .xls, .xlsx, atau .csv dengan kolom: Kode, Nama Rekening</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Import</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+            </tbody>
               </table>
+              </div>
+</div>
+<!-- Tampilkan Pagination -->
+<div class="p-3">
+  <?= $pagination; ?>
+</div>
+
             </div>
           </div>
         </div>

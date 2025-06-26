@@ -68,6 +68,14 @@ public function get_expenditures_paginated($limit, $offset) {
                 ->get('pengeluaran') // Ganti dengan nama tabel Anda
                 ->result();
 }
+public function get_expenditures_with_kodering($limit, $offset) {
+    $this->db->select('pengeluaran.*, kode_rekening.kode as kode_rekening_kode');
+    $this->db->from('pengeluaran');
+    $this->db->join('kode_rekening', 'kode_rekening.id = pengeluaran.kode_rekening_id', 'left');
+    $this->db->limit($limit, $offset);
+    $this->db->order_by('tanggal_pengeluaran', 'desc');
+    return $this->db->get()->result();
+}
 
 
     

@@ -50,7 +50,7 @@ class Expenditure extends CI_Controller {
     $this->pagination->initialize($config);
 
     // Ambil data pengeluaran dengan limit dan offset
-    $data['expenditures'] = $this->Expenditure_model->get_expenditures_paginated($limit, $page);
+   $data['expenditures'] = $this->Expenditure_model->get_expenditures_with_kodering($limit, $page);
     $data['users'] = $this->User_model->get_all_users();
     $data['kode_rekening'] = $this->KodeRekening_model->get_all_kode_rekening();
 
@@ -102,4 +102,72 @@ class Expenditure extends CI_Controller {
         $this->Expenditure_model->delete_expenditure($id);
         redirect('expenditure');
     }
+    public function import() {
+    $this->load->library('upload');
+    $this->load->library('PHPExcel_Lib');
+
+    $config['upload_path']   = './uploads/';
+    $config['allowed_types'] = 'xls|xlsx';
+    $config['max_size']      = 2048;
+
+    $this->upload->initialize($config);
+
+    if (!$this->upload->do_upload('file_import')) {
+        $this->session->set_flashdata('error', $this->upload->display_errors());
+        redirect('expenditure');
+    }
+
+    $file_data = $this->upload->data();
+    $file_path = $file_data['full_path'];
+
+    include APPPATH.'third_party/PHPExcel/Classes/PHPExcel/IOFactory.php';
+    $objPHPExcel = PHPExcel_IOFactory::load($file_path);
+    $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+
+    $imported = 0;
+    $skipped = 0;
+    $insert = [];
+
+    foreach ($sheetData as $i => $row) {
+        if ($i == 1) continue; // Lewati baris header
+
+        $user_id        = $row['A'];
+        $kode_rekening  = trim($row['B']);
+        $tanggal        = $row['C'];
+        $jumlah         = $row['D'];
+        $keterangan     = $row['E'];
+
+        // Cari id kode_rekening berdasarkan kode
+        $kode_row = $this->db->get_where('kode_rekening', ['kode' => $kode_rekening])->row();
+
+        if ($kode_row) {
+            $insert[] = [
+                'user_id'             => $user_id,
+                'kode_rekening_id'    => $kode_row->id,
+                'tanggal_pengeluaran' => $tanggal,
+                'jumlah_pengeluaran'  => $jumlah,
+                'keterangan'          => $keterangan
+            ];
+            $imported++;
+        } else {
+            $skipped++;
+        }
+    }
+
+    if (!empty($insert)) {
+        $this->db->insert_batch('pengeluaran', $insert);
+    }
+
+    unlink($file_path); // Hapus file setelah proses
+
+    $msg = "Berhasil impor $imported data.";
+    if ($skipped > 0) {
+        $msg .= " $skipped data dilewati karena kode rekening tidak ditemukan.";
+    }
+
+    $this->session->set_flashdata('success', $msg);
+    redirect('expenditure');
+}
+
+
 }
